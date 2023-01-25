@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Bits Blockchain Task</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.2.7-rc.0/web3.min.js"></script>
+	<style>
+		.btn{
+			background-color: #EAE0DA;
+			color: #85586F;
+			border-color: aqua;
+		}
+		.btn:hover{
+			background-color: #B9F3FC;
+			
+		}
+
+		body {
+			background-color: #F7F5EB;
+			font-size: 33px;
+			text-align: center;
+		}
+
+		p {
+			color:  #85586F;
+		}
+	
+	
+
+	</style>
+</head>
+
+<body>
+	
+	<button class="btn btn-primary" id="contractArea" onclick="connectMetamask()">CONNECT TO METAMASK</button> <br>
+	<!-- <p id="accountArea"></p> -->
+	<!-- <button onclick="connectContract()">CONNECT TO CONTRACT</button> <br> -->
+	<p id="contractArea"></p>
+	<!-- <button onclick="deployContract()">DEPLOY CONTRACT</button> <br> -->
+	<!-- <p id="ConfrirmationArea"></p> -->
+	<button class="btn btn-primary" onclick="readContract()">Get list of questions which have to be attempted</button> <br>
+	<p id="dataArea"></p>
+	<button class="btn btn-primary" onclick="loadQuestions()">Get Questions Corresponding to the list</button> <br>
+	<p id="questionset"></p>
+	<p id="myText"></p>
+<button type="button" id="myBtn" class="btn btn-primary">Next Question</button>
+
+	<script>
+		document.getElementById('myBtn').style.visibility= 'hidden'
+		document.getElementById('myText').style.visibility= 'hidden'
+		//connect metamask
+		let account;
+		const connectMetamask = async () => {
+			if (window.etheruem !== "undefined") {
+				const accounts = await ethereum.request({
+					method: "eth_requestAccounts"
+				});
+				account = accounts[0];
+				//document.getElementById("accountArea").innerHTML = account;
+
+			}
+			const ABI = [
+	{
+		"inputs": [],
+		"name": "getlistofquest",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"inputs": [],
+		"name": "keccakcount",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "len",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "listofquesnos",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "randomnumber",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+];
+			const Address = "0xdb6A7413F8aA4216caB5a961d414dAF70A5DC77b";
+			window.web3 = await new Web3(window.ethereum);
+			window.contract = await new window.web3.eth.Contract(ABI, Address);
+			document.getElementById("contractArea").innerHTML = "connected to smart contract";
+			window.contract.methods.getlistofquest().send({
+				from: account
+			});
+			//document.getElementById("ConfrirmationArea").innerHTML = " Smart Contract Deployed"
+			
+
+		}
+		// reading listof ques
+		var newtmps = [];
+		const readContract = async () => {
+			// window.contract.methods.getlistofquest().send({from:account});
+			document.getElementById("contractArea").style.visibility="hidden";
+
+
+
+			const tmps = await Promise.all(
+				Array(10)
+				.fill()
+				.map((element, index) => {
+					return window.contract.methods.listofquesnos(index).call();
+				})
+			)
+			document.getElementById("dataArea").innerHTML = tmps
+			newtmps = tmps;
+		}
+		// reading values from json
+
+		// printing values from questions
+
+		var allQuestions = new Array();
+		var questions= new Array();
+		var xounter=0;
+
+		function loadQuestions() {
+
+			let xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function () {
+				if (xhttp.readyState == 4 && xhttp.status == 200) {
+					var data = JSON.parse(xhttp.responseText);
+
+					//const questions = [];
+					for (let i = 0; i < 10; i++) {
+						var num = newtmps[i];
+						var item = data.quiz[num - 1];
+						questions.push(item);
+
+					}
+					//if(xounter==0){document.getElementById("questionset").innerHTML = questions;
+				//xounter++;}
+				if(questions.length==10){
+			document.getElementById('myBtn').style.visibility= 'visible';
+				document.getElementById('myText').style.visibility= 'visible';
+		var texts = questions;
+    btn = document.getElementById("myBtn"),
+    text = document.getElementById("myText"),
+    index = 0;
+
+btn.addEventListener("click", changeText);
+text.innerHTML = texts[0];
+
+function changeText() {
+    index++;
+    index %= texts.length
+    text.innerHTML = texts[index];
+}}
+				
+					
+
+				}
+				// else {
+				// 	document.getElementById("questionset").innerHTML = "connectionerror";
+				// }
+			}
+			xhttp.open("GET", "SampleQB.json", true);
+			xhttp.send();
+
+
+
+		}
+		if(questions.length==10){
+			document.getElementById('myBtn').style.visibility= 'visible';
+				document.getElementById('myText').style.visibility= 'visible';
+		var texts = questions;
+    btn = document.getElementById("myBtn"),
+    text = document.getElementById("myText"),
+    index = 0;
+
+btn.addEventListener("click", changeText);
+text.innerHTML = texts[0];
+
+function changeText() {
+    index++;
+    index %= texts.length
+    text.innerHTML = texts[index];
+}}
+		
+	</script>
+
+</body>
+
+</html>

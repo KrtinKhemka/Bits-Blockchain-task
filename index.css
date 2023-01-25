@@ -1,0 +1,17 @@
+.div1{
+  text-align: center;
+  font-family: "Roboto";
+  font-weight: light;
+  font-size: 1.4rem;;
+  color: #00A8CC;
+}
+body{
+  background-color: #000000;
+}
+.link{
+  color: #00A8CC;
+}
+.link:hover{
+  color: #FF1E56;
+
+}
